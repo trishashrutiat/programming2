@@ -1,0 +1,177 @@
+package taxi;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Taxi {
+
+    public static void main(String[] args) {
+        ArrayList<tax> taxiList = new ArrayList<>();
+
+        // Adding taxis with IDs 1 and 2
+        for (int i = 1; i <= 2; i++) {
+            taxiList.add(new tax(i));
+        }
+
+        // Example booking
+        int result = book(taxiList, 9, 'A', 'B');
+
+        // Print travel history for each taxi
+        for (tax t : taxiList) {
+            List<travelHist> travelHistory = t.getTravelHistory();
+            System.out.println("Taxi " + t.getTaxiId() + " Travel History:");
+            for (travelHist trip : travelHistory) {
+                System.out.println(trip);
+            }
+            System.out.println("Total Earnings: Rs. " + t.getTotalEarnings());
+            System.out.println();
+        }
+    }
+
+    public static int book(ArrayList<tax> taxiList, int pickupTime, char start, char end) {
+        tax t1 = checkAvailability(taxiList, start);
+
+        if (t1 == null) {
+            System.out.println("Rejected");
+            return -1; // Indicating rejection
+        }
+
+        // Update taxi position and salary
+        t1.updatePosition(end);
+        t1.updateSalary(start, end);
+
+        // Calculate travel distance
+        int distance = t1.distance(start, end);
+
+        // Create travel history entry and add to taxi's history
+        travelHist historyEntry = new travelHist(pickupTime, start, end, t1.getSalary(), t1.getTaxiId(), pickupTime + 1);
+        t1.addHistory(historyEntry);
+
+        // Print confirmation or do further processing
+        System.out.println("Taxi " + t1.getTaxiId() + " booked from " + start + " to " + end);
+
+        // Return some meaningful result if needed
+        return 0; // Successfully booked
+    }
+
+    public static tax checkAvailability(ArrayList<tax> taxiList, char start) {
+        ArrayList<tax> available = new ArrayList<>();
+
+        // Find available taxis at the start position
+        for (tax t : taxiList) {
+            if (t.getCurrentPosition() == start) {
+                available.add(t);
+            }
+        }
+
+        // Find taxi with the minimum salary among available taxis
+        if (!available.isEmpty()) {
+            double minSalary = Double.MAX_VALUE;
+            tax minTaxi = null;
+
+            for (tax t : available) {
+                if (t.getSalary() < minSalary) {
+                    minSalary = t.getSalary();
+                    minTaxi = t;
+                }
+            }
+
+            return minTaxi; // Return taxi with minimum salary
+        } else {
+            return null; // No taxis available at start position
+        }
+    }
+
+}
+
+class tax { // Details of taxi 
+    private int taxiId;
+    private double salary;
+    private char currentPosition;
+    private List<travelHist> travelHistory;
+
+    public tax(int num) {
+        taxiId = num;
+        salary = 0.0D;
+        currentPosition = 'A'; // Initial position set to 'A'
+        travelHistory = new ArrayList<>();
+    }
+
+    public double getSalary() {
+        return this.salary;
+    }
+
+    public int getTaxiId() {
+        return this.taxiId;
+    }
+
+    public char getCurrentPosition() {
+        return this.currentPosition;
+    }
+
+    public void updatePosition(char end) {
+        this.currentPosition = end;
+    }
+
+    public void updateSalary(char start, char end) {
+        int s = start - 'A';
+        int e = end - 'A';
+        int diff = Math.abs(e - s); // Calculate absolute difference
+
+        // Assuming cost calculation based on the given logic
+        double price = 500 + (diff - 5) * 10; // Initial 5 km and subsequent km rate
+
+        this.salary = price;
+    }
+
+    public int distance(char start, char end) {
+        return Math.abs(end - start); // Calculate distance between positions
+    }
+
+    public void addHistory(travelHist trip) {
+        this.travelHistory.add(trip);
+    }
+
+    public List<travelHist> getTravelHistory() {
+        return this.travelHistory;
+    }
+
+    // Additional method to get total earnings
+    public double getTotalEarnings() {
+        double totalEarnings = 0.0;
+        for (travelHist th : travelHistory) {
+            totalEarnings += th.cost;
+        }
+        return totalEarnings;
+    }
+}
+
+class travelHist {
+    int pickupTime;
+    char pickupPosition;
+    char destinationPosition;
+    double cost;
+    int taxiNumber;
+    int reachingTime;
+
+    public travelHist(int pickupTime, char pickupPosition, char destinationPosition, double cost, int taxiNumber, int reachingTime) {
+        this.pickupTime = pickupTime;
+        this.pickupPosition = pickupPosition;
+        this.destinationPosition = destinationPosition;
+        this.cost = cost;
+        this.taxiNumber = taxiNumber;
+        this.reachingTime = reachingTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Transaction History{" +
+                "pickupTime=" + this.pickupTime +
+                ", pickupPosition=" + pickupPosition +
+                ", destinationPosition=" + destinationPosition +
+                ", cost=" + cost +
+                ", taxiNumber=" + taxiNumber +
+                ", reachingTime=" + reachingTime +
+                '}';
+    }
+}
