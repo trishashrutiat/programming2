@@ -1,0 +1,38 @@
+package taxi;
+import java.util.*;
+public class ball {
+    public static void main(String[]Args){
+        int i,j,k=0;
+    Map <Character,Integer> hm =new HashMap<>();
+    hm.put('r',0);
+    hm.put('b',0);
+    hm.put('g',0);
+    char arr[]={'r','b','b','g','g'};
+    for(i=0;i<arr.length;i++)
+    {
+        if(arr[i]==hm.get('r'))
+            hm.put('r',hm.get('r')+1);
+        else if(arr[i]==hm.get('b'))
+            hm.put('r',hm.get('b')+1);
+        else if(arr[i]==hm.get('g'))
+            hm.put('r',hm.get('g')+1);
+    }
+    for(i=0;i<hm.get('r');i++)
+    {
+        arr[i]='r';
+    }
+    for(j=i;j<hm.get('b');j++)
+    {
+        arr[j]='b';
+    }
+    for(k=j;i<hm.get('r');k++)
+    {
+        arr[k]='r';
+    }
+for(k=0;k<arr.length;k++)
+    {
+        System.out.println(arr[k]);
+    }
+
+    
+}}
